@@ -1,0 +1,47 @@
+body {
+    	background-color: lightblue;
+    	font-family: verdana;
+    	font-size: 20px;
+   
+    	padding-top: 20px;
+        padding-left: 120px;
+        padding-right: 120px;
+}
+
+.mainBox {
+
+	border: 1px solid grey;
+}
+
+
+.searchBox{
+		padding: 20px 20px 20px 20px;
+		
+}
+
+#itemNumb{
+		width:25px;
+}
+
+.resultBox {
+
+  		 border-left: 1px solid grey;
+                 border-right: 1px solid grey;
+                 border-bottom: 1px solid grey;
+}
+
+.summary{
+		padding: 20px 20px 20px 20px;
+}
+
+.withPadding {
+  padding: 10px 0px 0px 0px;
+}
+
+.myPict{
+	width="300";
+}
+h1 {
+    color: navy;
+    margin-left: 20px;
+}

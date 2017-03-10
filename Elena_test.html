@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+   <meta charset=utf-8 />
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+   <link rel="stylesheet" type="text/css" href="mystyle.css">
+   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+   <title>Elena Twitch test</title>
+</head>
+
+<body>
+
+   <div ng-app="myApp" ng-controller="myCtrl"> 
+     <div  class="container mainBox" >
+      
+           <div class="row searchBox" >
+              <div class="col-sm-2" >
+                <input type="text" placeholder="search" ng-model="MySearch" ng-change="clearOldData()"></input>        
+              </div>
+
+              <div class="col-sm-6">
+                 <button ng-click="getData(0,100)">Search</button>
+              </div>
+
+              <div class="col-sm-4" > 
+              <label >Items per page:</label>
+              <input  id="itemNumb" type="text" ng-model="itemCount"  ng-change="clearOldData()"></input>    
+              </div>
+
+           </div>
+     </div>      
+
+     <div class="container resultBox">
+        <div ng-if = "count" > 
+           <div class="row summary" >
+              <div class="col-sm-2" > Total {{count}} </div>
+              <div class="col-sm-8" >  </div>
+              <div class="col-sm-2" > 
+                 <button type="button" ng-click="getPrevPage()" ng-disabled="ppDisabled" class="btn btn-default"> < </button>
+                 {{page}} / {{pageTotal}} 
+                 <button type="button" ng-disabled="{{npDisabled}}" ng-click="getNextPage()" class="btn btn-default"> > </button>
+              </div>
+           </div>
+        </div>    
+        <div   ng-repeat="x in streams" > <my-item x ='x'> </my-info></div>
+     </div>
+  </div>
+
+  <script>
+     var app = angular.module('myApp', []);
+     app.controller('myCtrl', function($scope, $http) {
+     $scope.myWelcome = $scope.MySearch;
+
+     $scope.clearOldData = function(){
+        $scope.count =0;
+        $scope.page = 0;
+        $scope.pageTotal = 0;
+        $scope.streams =[];
+    };
+
+    $scope.clearOldData();
+    $scope.itemCount = 3;
+
+
+    $scope.getData = function(myOffset, myLimit) {
+
+
+       $http({
+          method: 'GET',
+          url: 'https://api.twitch.tv/kraken/search/streams?q=' + $scope.MySearch +'&limit='+ myLimit + '&offset=' +myOffset,               //'starcraft',
+         headers: {'Client-ID': '3g85q1p3tucg94xmv9vjecml0a84wk'}
+         }).then(function successCallback(response) {
+    
+           $scope.streams =  response.data.streams.slice(0,$scope.itemCount);
+
+           if($scope.page === 0){
+              $scope.count = response.data.streams.length;
+              $scope.pageTotal = Math.ceil($scope.count/$scope.itemCount);
+              $scope.page = 1;   
+           }
+    
+          $scope.npDisabled = ( $scope.page == $scope.pageTotal);
+          $scope.ppDisabled = ( $scope.page == 1);
+
+          console.log(response.data.streams);
+        }, function errorCallback(response) {
+        console.log(" $http has a problem");
+        });
+
+    }
+
+    $scope.getNextPage = function() {
+     
+        
+     if ( $scope.page == this.pageTotal){
+         return;  
+     }
+     var curPage = $scope.page;
+     var curOffset = curPage  * $scope.itemCount -1
+     $scope.page = curPage + 1; 
+    
+     this.getData(curOffset , $scope.itemCount);
+       console.log(" getting "  + $scope.itemCount   + " items with offset "  + curOffset );
+    };
+
+   $scope.getPrevPage = function() {
+    
+      if( $scope.page == 1){
+        return;
+     } 
+
+     $scope.page = $scope.page - 1;
+     var curOffset = ($scope.page -1)  * $scope.itemCount -1 ;
+     this.getData(curOffset , $scope.itemCount);
+     console.log(" getting "  + $scope.itemCount   + " items with offset "  + curOffset );
+   };
+
+
+});
+
+  app.directive('myItem', function () {
+     return {
+        restrict: 'E',
+        scope: { xx: '=x'},
+        templateUrl: 'Elena_template.html'
+    };
+
+  });
+
+</script>
+
+</body>
+</html>
